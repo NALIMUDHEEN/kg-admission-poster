@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>KG Admission Poster Generator | KYHSS Athavanad</title>
+
+  <!-- Google Fonts for UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    /* Embed Photoshop Titling Font */
+    @font-face {
+      font-family: 'BigNoodleTitling';
+      src: url('Assets/fonts/big_noodle_titling.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --bg-sky: #ebf6ff;
+      --bg-gradient: radial-gradient(circle at 50% 0%, #cde8ff 0%, #ebf6ff 60%, #e2f0fc 100%);
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --card-border: rgba(14, 116, 144, 0.16);
+      --primary-color: #0c7489;
+      --primary-hover: #085565;
+      --accent-gold: #f59e0b;
+      --accent-purple: #7e22ce;
+      --text-dark: #0f2d3d;
+      --text-muted: #527588;
+      --whatsapp-green: #25D366;
+      --whatsapp-hover: #1eb956;
+      --btn-copy: #6366f1;
+      --btn-copy-hover: #4f46e5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 12px 60px;
+    }
+
+    /* Header Bar */
+    header {
+      text-align: center;
+      max-width: 520px;
+      margin-bottom: 16px;
+      padding: 0 8px;
+    }
+
+    .badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: rgba(12, 116, 137, 0.12);
+      border: 1px solid rgba(12, 116, 137, 0.2);
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--primary-color);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 23px;
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -0.3px;
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+
+    header p {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Main Container */
+    .app-container {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Canvas Stage Container */
+    .stage-card {
+      width: 100%;
+      background: #000;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px -12px rgba(12, 116, 137, 0.25), 0 0 0 1px rgba(12, 116, 137, 0.12);
+      position: relative;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 133.333%;
+      /* 2160x2880 = 3:4 */
+      background: #c7e3f8;
+    }
+
+    #posterCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .stage-loading {
+      position: absolute;
+      inset: 0;
+      background: rgba(235, 246, 255, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: opacity 0.3s;
+      gap: 10px;
+    }
+
+    .stage-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(12, 116, 137, 0.2);
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Form Controls Cards */
+    .control-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 6px 20px rgba(15, 45, 61, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary-color);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-label .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: #fff;
+      font-size: 11.5px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Photo Upload Area */
+    .photo-area {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .photo-preview-circle {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      border: 2.5px dashed rgba(12, 116, 137, 0.4);
+      background: #f0f8ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .photo-preview-circle:hover {
+      border-color: var(--primary-color);
+      transform: scale(1.03);
+    }
+
+    .photo-preview-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-preview-circle .placeholder-icon {
+      font-size: 28px;
+      color: var(--text-muted);
+    }
+
+    .photo-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .btn-upload {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #fff;
+      border: 1.5px solid rgba(12, 116, 137, 0.3);
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--primary-color);
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 6px rgba(12, 116, 137, 0.08);
+    }
+
+    .btn-upload:hover {
+      background: #f0f9ff;
+      border-color: var(--primary-color);
+    }
+
+    .photo-sub-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-sub {
+      flex: 1;
+      padding: 7px 10px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      background: #f8fafc;
+      color: var(--text-dark);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .btn-sub:hover:not(:disabled) {
+      background: #e2e8f0;
+    }
+
+    .btn-sub:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Name Input Box */
+    .name-input-wrapper {
+      position: relative;
+    }
+
+    textarea#studentName {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(12, 116, 137, 0.25);
+      background: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-dark);
+      outline: none;
+      resize: vertical;
+      min-height: 52px;
+      transition: all 0.2s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      text-transform: uppercase;
+    }
+
+    textarea#studentName:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(12, 116, 137, 0.15);
+    }
+
+    .input-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Action Buttons (Download, Copy, Share) */
+    .actions-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .btn-primary-action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      color: #fff;
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, #0c7489, #085261);
+    }
+
+    .btn-download:hover:not(:disabled) {
+      background: linear-gradient(135deg, #0e859d, #0b6072);
+      transform: translateY(-1px);
+    }
+
+    .btn-copy-poster {
+      background: linear-gradient(135deg, #4f46e5, #3730a3);
+    }
+
+    .btn-copy-poster:hover:not(:disabled) {
+      background: linear-gradient(135deg, #6366f1, #4338ca);
+      transform: translateY(-1px);
+    }
+
+    .btn-whatsapp {
+      background: linear-gradient(135deg, #25D366, #128C7E);
+    }
+
+    .btn-whatsapp:hover:not(:disabled) {
+      background: linear-gradient(135deg, #2ae06f, #159b8c);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary-action:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Interactive Crop Modal */
+    .crop-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 23, 33, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .crop-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .crop-dialog {
+      background: #ffffff;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+      animation: modalSlide 0.25s ease-out;
+    }
+
+    @keyframes modalSlide {
+      from {
+        transform: translateY(18px) scale(0.97);
+      }
+
+      to {
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .crop-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid #eef2f6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .crop-header h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .crop-close-x {
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: #94a3b8;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .crop-viewport-container {
+      padding: 16px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .crop-viewport {
+      position: relative;
+      width: 290px;
+      height: 330px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #0f172a;
+      touch-action: none;
+      cursor: grab;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .crop-viewport:active {
+      cursor: grabbing;
+    }
+
+    #cropCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Wooden hoop overlay guide in crop modal */
+    .crop-guide-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: 16px;
+      border: 2px dashed rgba(255, 255, 255, 0.4);
+    }
+
+    .crop-guide-oval {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 230px;
+      height: 260px;
+      transform: translate(-50%, -50%) rotate(8.97deg);
+      border: 3.5px solid #f59e0b;
+      border-radius: 50%;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+    }
+
+    .crop-controls {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .control-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-header-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .control-header-flex .slider-val {
+      color: var(--primary-color);
+      font-family: monospace;
+      font-size: 13px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #e2e8f0;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(12, 116, 137, 0.4);
+      transition: transform 0.1s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .preset-btns {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .preset-btn {
+      flex: 1;
+      padding: 5px 8px;
+      border-radius: 7px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      font-size: 11px;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .preset-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+
+    .crop-footer {
+      padding: 12px 20px 16px;
+      border-top: 1px solid #eef2f6;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-crop-cancel {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1.5px solid #cbd5e1;
+      background: #fff;
+      font-weight: 700;
+      font-size: 13.5px;
+      color: #64748b;
+      cursor: pointer;
+    }
+
+    .btn-crop-confirm {
+      flex: 1.5;
+      padding: 10px;
+      border-radius: 12px;
+      border: none;
+      background: var(--primary-color);
+      font-weight: 700;
+      font-size: 13.5px;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(12, 116, 137, 0.3);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 2000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Hidden file input */
+    #photoInput {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="badge-tag">🎈 Kindergarten Admission 2026-27</div>
+    <h1>KYHSS Athavanad</h1>
+    <p>Welcome Frame & Poster Creator</p>
+  </header>
+
+  <div class="app-container">
+
+    <!-- Live Canvas Stage -->
+    <div class="stage-card">
+      <div class="canvas-wrapper">
+        <canvas id="posterCanvas" width="2160" height="2880"></canvas>
+        <div class="stage-loading" id="stageLoading">
+          <div class="stage-spinner"></div>
+          <span style="font-weight: 700; font-size: 14px; color: var(--primary-color);">Loading Template...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1: Upload Photo -->
+    <div class="control-card">
+      <div class="card-label">
+        <span class="step-num">1</span>
+        <span>Student Photo</span>
+      </div>
+
+      <div class="photo-area">
+        <div class="photo-preview-circle" id="photoCircleBtn" title="Click to upload/adjust photo">
+          <span class="placeholder-icon" id="photoPlaceholderIcon">📷</span>
+        </div>
+
+        <div class="photo-btn-group">
+          <button class="btn-upload" type="button" id="uploadPhotoBtn">
+            <span>Choose Student Photo</span>
+          </button>
+
+          <div class="photo-sub-actions">
+            <button class="btn-sub" type="button" id="adjustPhotoBtn" disabled>
+              <span>🔄 Adjust & Rotate</span>
+            </button>
+            <button class="btn-sub" type="button" id="removePhotoBtn" disabled>
+              <span>🗑️ Remove</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <input type="file" id="photoInput" accept="image/*">
+    </div>
+
+    <!-- Step 2: Student Name -->
+    <div class="control-card">
+      <div class="card-label">
+        <span class="step-num">2</span>
+        <span>Student Name</span>
+      </div>
+
+      <div class="name-input-wrapper">
+        <textarea id="studentName" rows="2" placeholder="TYPE STUDENT NAME..."></textarea>
+        <div class="input-hint">
+          <span>Photoshop titling font • Auto text box wrap</span>
+          <span id="charCount">0 letters</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Action Buttons (Download, Copy, Share) -->
+    <div class="control-card">
+      <div class="card-label">
+        <span class="step-num">3</span>
+        <span>Export & Share</span>
+      </div>
+
+      <div class="actions-grid">
+        <!-- Direct Download Button -->
+        <button class="btn-primary-action btn-download" type="button" id="downloadBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2 2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Download High-Res Poster</span>
+        </button>
+
+        <!-- Direct Copy to Clipboard Button -->
+        <button class="btn-primary-action btn-copy-poster" type="button" id="copyPosterBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span>Copy Poster (Paste Anywhere)</span>
+        </button>
+
+        <!-- Direct WhatsApp / Web Share Button -->
+        <button class="btn-primary-action btn-whatsapp" type="button" id="sharePosterBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.05 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+          </svg>
+          <span>Share Poster (WhatsApp)</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Interactive Crop Modal -->
+  <div class="crop-modal" id="cropModal">
+    <div class="crop-dialog">
+      <div class="crop-header">
+        <h3>Adjust & Rotate Student Photo</h3>
+        <button class="crop-close-x" id="closeCropX">&times;</button>
+      </div>
+
+      <div class="crop-viewport-container">
+        <div class="crop-viewport" id="cropViewport">
+          <canvas id="cropCanvas" width="580" height="660"></canvas>
+          <div class="crop-guide-overlay">
+            <div class="crop-guide-oval"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="crop-controls">
+        <!-- Zoom Slider -->
+        <div class="control-row">
+          <div class="control-header-flex">
+            <span>🔍 Zoom</span>
+            <span class="slider-val" id="zoomVal">100%</span>
+          </div>
+          <input type="range" id="zoomSlider" min="50" max="350" value="100">
+        </div>
+
+        <!-- Rotation Slider -->
+        <div class="control-row">
+          <div class="control-header-flex">
+            <span>🔄 Rotation (Tilt)</span>
+            <span class="slider-val" id="rotateVal">+9.0°</span>
+          </div>
+          <input type="range" id="rotateSlider" min="-45" max="45" step="0.5" value="8.97">
+          <div class="preset-btns">
+            <button type="button" class="preset-btn" id="tiltDefaultBtn">Frame Tilt (+9.0°)</button>
+            <button type="button" class="preset-btn" id="tiltLeftBtn">Opposite Tilt (-9.0°)</button>
+            <button type="button" class="preset-btn" id="tiltZeroBtn">Upright (0°)</button>
+            <button type="button" class="preset-btn" id="centerPhotoBtn">Center</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="crop-footer">
+        <button type="button" class="btn-crop-cancel" id="cancelCropBtn">Cancel</button>
+        <button type="button" class="btn-crop-confirm" id="confirmCropBtn">Done (Apply)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Alert -->
+  <div class="toast" id="toastAlert">
+    <span id="toastMsg">✅ Poster Copied to Clipboard!</span>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // --- CONSTANTS & COORDINATES (from Photoshop PSD Metadata) ---
+      const CW = 2160;
+      const CH = 2880;
+
+      // Wooden ring cutout center & bounding area
+      const FRAME_CUTOUT = {
+        centerX: 1436,
+        centerY: 1478,
+        radiusX: 385,
+        radiusY: 435,
+        tiltDeg: 8.97, // Natural tilt angle of the wooden basket hoop
+        // Bounding box for offscreen cropped canvas
+        x: 1010,
+        y: 1010,
+        w: 850,
+        h: 940
+      };
+
+      // Photoshop Text Box Engine Spec
+      const TEXT_BOX = {
+        x: 350,
+        y: 850,
+        width: 650,
+        height: 536,
+        baseFontSize: 170, // Exact 170.83px from PSD
+        color: '#092634',  // Deep dark navy / slate blue from PSD
+        fontFamily: "'BigNoodleTitling', sans-serif"
+      };
+
+      // --- DOM ELEMENTS ---
+      const posterCanvas = document.getElementById('posterCanvas');
+      const ctx = posterCanvas.getContext('2d');
+      const stageLoading = document.getElementById('stageLoading');
+
+      const photoInput = document.getElementById('photoInput');
+      const uploadPhotoBtn = document.getElementById('uploadPhotoBtn');
+      const photoCircleBtn = document.getElementById('photoCircleBtn');
+      const photoPlaceholderIcon = document.getElementById('photoPlaceholderIcon');
+      const adjustPhotoBtn = document.getElementById('adjustPhotoBtn');
+      const removePhotoBtn = document.getElementById('removePhotoBtn');
+
+      const studentNameInput = document.getElementById('studentName');
+      const charCountEl = document.getElementById('charCount');
+
+      const downloadBtn = document.getElementById('downloadBtn');
+      const copyPosterBtn = document.getElementById('copyPosterBtn');
+      const sharePosterBtn = document.getElementById('sharePosterBtn');
+
+      // Crop Modal Elements
+      const cropModal = document.getElementById('cropModal');
+      const closeCropX = document.getElementById('closeCropX');
+      const cancelCropBtn = document.getElementById('cancelCropBtn');
+      const confirmCropBtn = document.getElementById('confirmCropBtn');
+      const cropViewport = document.getElementById('cropViewport');
+      const cropCanvas = document.getElementById('cropCanvas');
+      const cropCtx = cropCanvas.getContext('2d');
+      const zoomSlider = document.getElementById('zoomSlider');
+      const zoomVal = document.getElementById('zoomVal');
+      const rotateSlider = document.getElementById('rotateSlider');
+      const rotateVal = document.getElementById('rotateVal');
+      const tiltDefaultBtn = document.getElementById('tiltDefaultBtn');
+      const tiltLeftBtn = document.getElementById('tiltLeftBtn');
+      const tiltZeroBtn = document.getElementById('tiltZeroBtn');
+      const centerPhotoBtn = document.getElementById('centerPhotoBtn');
+
+      const toastAlert = document.getElementById('toastAlert');
+      const toastMsg = document.getElementById('toastMsg');
+
+      // --- STATE ---
+      let templateImg = new Image();
+      let isTemplateLoaded = false;
+      let rawStudentPhoto = null;
+      let croppedPhotoCanvas = null;
+
+      // Crop State
+      const cropState = {
+        img: null,
+        scale: 1,
+        baseScale: 1,
+        offsetX: 0,
+        offsetY: 0,
+        rotationDeg: 8.97, // Default slight tilt to match frame
+        isDragging: false,
+        startX: 0,
+        startY: 0
+      };
+
+      // --- 1. LOAD ASSETS (Template Frame & Fonts) ---
+      templateImg.crossOrigin = 'anonymous';
+      templateImg.src = 'Assets/Frame.png';
+      templateImg.onload = () => {
+        isTemplateLoaded = true;
+        // Wait for font to be loaded
+        document.fonts.ready.then(() => {
+          stageLoading.style.opacity = '0';
+          setTimeout(() => { stageLoading.style.display = 'none'; }, 300);
+          renderPoster();
+        });
+      };
+      templateImg.onerror = () => {
+        stageLoading.innerHTML = '<span style="color: #ef4444; font-weight: 700;">Failed to load Frame.png</span>';
+      };
+
+      // --- 2. PHOTO UPLOAD & HANDLING ---
+      function handlePhotoSelect(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            rawStudentPhoto = img;
+            openCropModal(img, true); // true = reset to default zoom & tilt
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      uploadPhotoBtn.addEventListener('click', () => photoInput.click());
+      photoCircleBtn.addEventListener('click', () => {
+        if (rawStudentPhoto) {
+          openCropModal(rawStudentPhoto, false);
+        } else {
+          photoInput.click();
+        }
+      });
+
+      photoInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          handlePhotoSelect(e.target.files[0]);
+        }
+      });
+
+      adjustPhotoBtn.addEventListener('click', () => {
+        if (rawStudentPhoto) openCropModal(rawStudentPhoto, false);
+      });
+
+      removePhotoBtn.addEventListener('click', () => {
+        rawStudentPhoto = null;
+        croppedPhotoCanvas = null;
+        photoInput.value = '';
+        photoPlaceholderIcon.style.display = 'block';
+        const existingImg = photoCircleBtn.querySelector('img');
+        if (existingImg) existingImg.remove();
+        adjustPhotoBtn.disabled = true;
+        removePhotoBtn.disabled = true;
+        renderPoster();
+      });
+
+      // --- 3. CROP & ROTATE MODAL LOGIC ---
+      function openCropModal(img, isNew) {
+        cropState.img = img;
+
+        if (isNew) {
+          // Fit image to viewport
+          const scaleW = cropCanvas.width / img.width;
+          const scaleH = cropCanvas.height / img.height;
+          cropState.baseScale = Math.max(scaleW, scaleH);
+          cropState.scale = cropState.baseScale * 1.05;
+          cropState.rotationDeg = 8.97; // Frame default tilt
+          cropState.offsetX = cropCanvas.width / 2;
+          cropState.offsetY = cropCanvas.height / 2;
+
+          zoomSlider.value = 100;
+          rotateSlider.value = 8.97;
+        }
+
+        updateSliderLabels();
+        cropModal.classList.add('open');
+        drawCropPreview();
+      }
+
+      function closeCropModal() {
+        cropModal.classList.remove('open');
+      }
+
+      closeCropX.addEventListener('click', closeCropModal);
+      cancelCropBtn.addEventListener('click', closeCropModal);
+
+      function updateSliderLabels() {
+        const zoomPercent = Math.round((cropState.scale / cropState.baseScale) * 100);
+        zoomVal.textContent = zoomPercent + '%';
+        const rotSign = cropState.rotationDeg > 0 ? '+' : '';
+        rotateVal.textContent = rotSign + parseFloat(cropState.rotationDeg).toFixed(1) + '°';
+      }
+
+      function drawCropPreview() {
+        if (!cropState.img) return;
+        cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+        cropCtx.save();
+
+        // Translate to current center point
+        cropCtx.translate(cropState.offsetX, cropState.offsetY);
+        // Rotate
+        cropCtx.rotate((cropState.rotationDeg * Math.PI) / 180);
+        // Scale & Draw centered
+        const dw = cropState.img.width * cropState.scale;
+        const dh = cropState.img.height * cropState.scale;
+        cropCtx.drawImage(cropState.img, -dw / 2, -dh / 2, dw, dh);
+
+        cropCtx.restore();
+      }
+
+      // Zoom slider
+      zoomSlider.addEventListener('input', (e) => {
+        const factor = parseFloat(e.target.value) / 100;
+        cropState.scale = cropState.baseScale * factor;
+        updateSliderLabels();
+        drawCropPreview();
+      });
+
+      // Rotation slider
+      rotateSlider.addEventListener('input', (e) => {
+        cropState.rotationDeg = parseFloat(e.target.value);
+        updateSliderLabels();
+        drawCropPreview();
+      });
+
+      // Preset buttons
+      tiltDefaultBtn.addEventListener('click', () => {
+        cropState.rotationDeg = 8.97;
+        rotateSlider.value = 8.97;
+        updateSliderLabels();
+        drawCropPreview();
+      });
+
+      tiltLeftBtn.addEventListener('click', () => {
+        cropState.rotationDeg = -8.97;
+        rotateSlider.value = -8.97;
+        updateSliderLabels();
+        drawCropPreview();
+      });
+
+      tiltZeroBtn.addEventListener('click', () => {
+        cropState.rotationDeg = 0;
+        rotateSlider.value = 0;
+        updateSliderLabels();
+        drawCropPreview();
+      });
+
+      centerPhotoBtn.addEventListener('click', () => {
+        cropState.offsetX = cropCanvas.width / 2;
+        cropState.offsetY = cropCanvas.height / 2;
+        drawCropPreview();
+      });
+
+      // Mouse & Touch Pan Dragging
+      function getPointerCoord(e) {
+        if (e.touches && e.touches.length > 0) {
+          return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+      }
+
+      function onDragStart(e) {
+        if (!cropState.img) return;
+        cropState.isDragging = true;
+        const pt = getPointerCoord(e);
+        cropState.startX = pt.x - cropState.offsetX * (cropViewport.clientWidth / cropCanvas.width);
+        cropState.startY = pt.y - cropState.offsetY * (cropViewport.clientHeight / cropCanvas.height);
+      }
+
+      function onDragMove(e) {
+        if (!cropState.isDragging || !cropState.img) return;
+        e.preventDefault();
+        const pt = getPointerCoord(e);
+        const ratioX = cropCanvas.width / cropViewport.clientWidth;
+        const ratioY = cropCanvas.height / cropViewport.clientHeight;
+        cropState.offsetX = (pt.x - cropState.startX) * ratioX;
+        cropState.offsetY = (pt.y - cropState.startY) * ratioY;
+        drawCropPreview();
+      }
+
+      function onDragEnd() {
+        cropState.isDragging = false;
+      }
+
+      cropViewport.addEventListener('mousedown', onDragStart);
+      window.addEventListener('mousemove', onDragMove);
+      window.addEventListener('mouseup', onDragEnd);
+
+      cropViewport.addEventListener('touchstart', onDragStart, { passive: false });
+      window.addEventListener('touchmove', onDragMove, { passive: false });
+      window.addEventListener('touchend', onDragEnd);
+
+      // Confirm Crop (Generate off-screen high-res crop)
+      confirmCropBtn.addEventListener('click', () => {
+        if (!cropState.img) return;
+
+        // Create high-res off-screen canvas for the cutout layer
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = FRAME_CUTOUT.w;
+        offCanvas.height = FRAME_CUTOUT.h;
+        const offCtx = offCanvas.getContext('2d');
+
+        // Scale factors between modal cropCanvas and the full resolution cutout
+        const scaleFactorX = FRAME_CUTOUT.w / cropCanvas.width;
+        const scaleFactorY = FRAME_CUTOUT.h / cropCanvas.height;
+
+        offCtx.save();
+        offCtx.translate(cropState.offsetX * scaleFactorX, cropState.offsetY * scaleFactorY);
+        offCtx.rotate((cropState.rotationDeg * Math.PI) / 180);
+
+        const dw = cropState.img.width * cropState.scale * scaleFactorX;
+        const dh = cropState.img.height * cropState.scale * scaleFactorY;
+        offCtx.drawImage(cropState.img, -dw / 2, -dh / 2, dw, dh);
+        offCtx.restore();
+
+        croppedPhotoCanvas = offCanvas;
+
+        // Update UI Thumbnail
+        photoPlaceholderIcon.style.display = 'none';
+        let thumbImg = photoCircleBtn.querySelector('img');
+        if (!thumbImg) {
+          thumbImg = document.createElement('img');
+          photoCircleBtn.appendChild(thumbImg);
+        }
+        thumbImg.src = offCanvas.toDataURL('image/jpeg', 0.85);
+
+        adjustPhotoBtn.disabled = false;
+        removePhotoBtn.disabled = false;
+
+        closeCropModal();
+        renderPoster();
+      });
+
+      // --- 4. STUDENT NAME LIVE INPUT ---
+      studentNameInput.addEventListener('input', () => {
+        charCountEl.textContent = studentNameInput.value.length + ' letters';
+        renderPoster();
+      });
+
+      // --- 5. POSTER RENDERING ENGINE ---
+      function renderPoster() {
+        if (!isTemplateLoaded) return;
+
+        ctx.clearRect(0, 0, CW, CH);
+
+        // LAYER 1 (BEHIND): Student Photo
+        if (croppedPhotoCanvas) {
+          ctx.save();
+          // Draw at cutout coordinates with 4px overlap bleed
+          ctx.drawImage(
+            croppedPhotoCanvas,
+            FRAME_CUTOUT.x - 2,
+            FRAME_CUTOUT.y - 2,
+            FRAME_CUTOUT.w + 4,
+            FRAME_CUTOUT.h + 4
+          );
+          ctx.restore();
+        }
+
+        // LAYER 2 (FOREGROUND): Template Frame (Frame.png)
+        // Frame.png contains the background, balloons, wooden hoop borders, text, and school branding.
+        ctx.drawImage(templateImg, 0, 0, CW, CH);
+
+        // LAYER 3: Student Name Text Box Engine
+        renderStudentName();
+      }
+
+      // --- 6. PHOTOSHOP TEXT BOX ENGINE ---
+      function renderStudentName() {
+        const rawText = studentNameInput.value;
+        if (!rawText || !rawText.trim()) return;
+
+        // Convert to uppercase (Titling style)
+        const text = rawText.toUpperCase();
+
+        // Split text by manual line breaks
+        const rawLines = text.split('\n');
+
+        let fontSize = TEXT_BOX.baseFontSize;
+        const minFontSize = 60;
+        let finalLines = [];
+        let totalTextHeight = 0;
+        let lineHeight = fontSize * 0.95;
+
+        // Calculate auto-wrapping and auto-scaling to fit within TEXT_BOX bounds
+        while (fontSize >= minFontSize) {
+          ctx.font = `bold ${fontSize}px ${TEXT_BOX.fontFamily}`;
+          lineHeight = fontSize * 0.95;
+          finalLines = [];
+
+          let fitsHorizontally = true;
+
+          for (let i = 0; i < rawLines.length; i++) {
+            const line = rawLines[i].trim();
+            if (!line) {
+              finalLines.push('');
+              continue;
+            }
+
+            const words = line.split(/\s+/);
+            let currentLine = '';
+
+            for (let j = 0; j < words.length; j++) {
+              const word = words[j];
+              const testLine = currentLine ? `${currentLine} ${word}` : word;
+              const testWidth = ctx.measureText(testLine).width;
+
+              if (testWidth <= TEXT_BOX.width) {
+                currentLine = testLine;
+              } else {
+                if (currentLine) {
+                  finalLines.push(currentLine);
+                  currentLine = word;
+                  // If a single word is wider than the text box, decrease font size
+                  if (ctx.measureText(word).width > TEXT_BOX.width) {
+                    fitsHorizontally = false;
+                    break;
+                  }
+                } else {
+                  // Even one word is too wide
+                  fitsHorizontally = false;
+                  break;
+                }
+              }
+            }
+
+            if (!fitsHorizontally) break;
+            if (currentLine) finalLines.push(currentLine);
+          }
+
+          totalTextHeight = finalLines.length * lineHeight;
+
+          if (fitsHorizontally && totalTextHeight <= TEXT_BOX.height) {
+            // Found suitable font size that fits both horizontally and vertically
+            break;
+          }
+
+          // Otherwise reduce font size by 4px and retry
+          fontSize -= 4;
+        }
+
+        // Draw formatted lines inside the text box
+        ctx.save();
+        ctx.font = `bold ${fontSize}px ${TEXT_BOX.fontFamily}`;
+        ctx.fillStyle = TEXT_BOX.color;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+
+        // Start drawing from TEXT_BOX.y
+        let cursorY = TEXT_BOX.y;
+
+        finalLines.forEach((l) => {
+          if (l) {
+            ctx.fillText(l, TEXT_BOX.x, cursorY);
+          }
+          cursorY += lineHeight;
+        });
+
+        ctx.restore();
+      }
+
+      // --- 7. EXPORT, COPY & SHARE ACTIONS ---
+      function getCleanFileName() {
+        const rawName = studentNameInput.value.trim().toUpperCase() || 'STUDENT';
+        const safeName = rawName.replace(/[^A-Z0-9_-]/g, '_');
+        return `KG_Admission_${safeName}.jpg`;
+      }
+
+      function showToast(message) {
+        toastMsg.textContent = message;
+        toastAlert.classList.add('show');
+        setTimeout(() => {
+          toastAlert.classList.remove('show');
+        }, 3200);
+      }
+
+      // DIRECT DOWNLOAD BUTTON
+      downloadBtn.addEventListener('click', () => {
+        downloadBtn.disabled = true;
+        const originalText = downloadBtn.querySelector('span').textContent;
+        downloadBtn.querySelector('span').textContent = 'Generating High-Res...';
+
+        posterCanvas.toBlob((blob) => {
+          downloadBtn.disabled = false;
+          downloadBtn.querySelector('span').textContent = originalText;
+
+          if (!blob) {
+            showToast('⚠️ Failed to generate image blob');
+            return;
+          }
+
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = getCleanFileName();
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('📥 Download Started!');
+        }, 'image/jpeg', 0.95);
+      });
+
+      // DIRECT COPY POSTER BUTTON (Clipboard API)
+      copyPosterBtn.addEventListener('click', () => {
+        copyPosterBtn.disabled = true;
+        const originalText = copyPosterBtn.querySelector('span').textContent;
+        copyPosterBtn.querySelector('span').textContent = 'Copying to Clipboard...';
+
+        // Clipboard API requires image/png
+        posterCanvas.toBlob(async (blob) => {
+          copyPosterBtn.disabled = false;
+          copyPosterBtn.querySelector('span').textContent = originalText;
+
+          if (!blob) {
+            showToast('⚠️ Failed to copy poster');
+            return;
+          }
+
+          if (navigator.clipboard && window.ClipboardItem) {
+            try {
+              const item = new ClipboardItem({ 'image/png': blob });
+              await navigator.clipboard.write([item]);
+              showToast('📋 Poster Copied! You can paste (Ctrl+V) anywhere');
+            } catch (err) {
+              console.warn('Clipboard write error:', err);
+              // Fallback: download the image instead
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = getCleanFileName();
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+              showToast('📥 Image Downloaded (Clipboard permission denied)');
+            }
+          } else {
+            showToast('⚠️ Clipboard image copy not supported on this browser');
+          }
+        }, 'image/png');
+      });
+
+      // DIRECT WHATSAPP / WEB SHARE BUTTON
+      sharePosterBtn.addEventListener('click', () => {
+        sharePosterBtn.disabled = true;
+        const originalText = sharePosterBtn.querySelector('span').textContent;
+        sharePosterBtn.querySelector('span').textContent = 'Preparing Share...';
+
+        posterCanvas.toBlob(async (blob) => {
+          sharePosterBtn.disabled = false;
+          sharePosterBtn.querySelector('span').textContent = originalText;
+
+          if (!blob) {
+            showToast('⚠️ Failed to prepare share');
+            return;
+          }
+
+          const fileName = getCleanFileName();
+          const file = new File([blob], fileName, { type: 'image/jpeg' });
+          const studentName = studentNameInput.value.trim().toUpperCase() || 'Our Student';
+          const shareText = `Welcome to KYHSS Athavanad Kindergarten! Admission continues for ${studentName}. Contact: 94475 70250, 0494-2570250, 73560 74074.`;
+
+          // Check if Web Share API with files is supported (iOS Safari / Android Chrome)
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({
+                files: [file],
+                title: 'KYHSS KG Admission Poster',
+                text: shareText
+              });
+            } catch (err) {
+              if (err.name !== 'AbortError') {
+                console.warn('Share error:', err);
+              }
+            }
+          } else {
+            // Desktop fallback: Download image and open WhatsApp
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+            window.open(whatsappUrl, '_blank');
+            showToast('💬 Poster downloaded & WhatsApp opened!');
+          }
+        }, 'image/jpeg', 0.95);
+      });
+
+    })();
+  </script>
+</body>
+
+</html>
